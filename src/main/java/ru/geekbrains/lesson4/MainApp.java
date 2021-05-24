@@ -52,7 +52,7 @@ public class MainApp {
             for (int i = 0; i < nThreads; i++) {
                 int startIndex = arr.length / nThreads * i;
                 int endIndex = i + 1 == nThreads ? arr.length : (arr.length / nThreads) * (i + 1);
-                tasks.add(new job(arr, startIndex, endIndex));
+                tasks.add(new Job(arr, startIndex, endIndex));
             }
             long startTime = System.currentTimeMillis();
             pool.invokeAll(tasks);
@@ -64,12 +64,12 @@ public class MainApp {
         }
     }
 
-    public static class job implements Callable<Long> {
+    public static class Job implements Callable<Long> {
         private final float[] arr;
         private final int startIndex;
         private final int endIndex;
 
-        public job(float[] arr, int startIndex, int endIndex) {
+        public Job(float[] arr, int startIndex, int endIndex) {
             this.arr = arr;
             this.startIndex = startIndex;
             this.endIndex = endIndex;
