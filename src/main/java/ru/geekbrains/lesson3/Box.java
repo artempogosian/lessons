@@ -17,7 +17,7 @@ public class Box<T extends Fruit> {
         return fruits.size();
     }
 
-    public float getWeight() {
+    public Float getWeight() {
         if (fruits.size() == 0)
             return 0f;
 
@@ -25,7 +25,7 @@ public class Box<T extends Fruit> {
     }
 
     public boolean compare(Box<? extends Fruit> anotherBox) {
-        return this.getWeight() == anotherBox.getWeight();
+        return this.getWeight().equals(anotherBox.getWeight());
     }
 
     public int moveTo(Box<T> anotherBox) {
