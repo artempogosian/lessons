@@ -51,7 +51,7 @@ public class MainApp {
         try {
             for (int i = 0; i < nThreads; i++) {
                 int startIndex = arr.length / nThreads * i;
-                int endIndex = (arr.length / nThreads) * (i + 1);
+                int endIndex = i + 1 == nThreads ? arr.length : (arr.length / nThreads) * (i + 1);
                 tasks.add(new job(arr, startIndex, endIndex));
             }
             long startTime = System.currentTimeMillis();
