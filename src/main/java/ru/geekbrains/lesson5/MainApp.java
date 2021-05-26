@@ -1,19 +1,90 @@
 package ru.geekbrains.lesson5;
 
-public class MainApp {
-    public static final int CARS_COUNT = 4;
+/*
+    Перенести приведенный ниже код в новый проект, где мы организуем гонки.
+    Все участники должны стартовать одновременно, несмотря на разное время подготовки.
+    В тоннель не может одновременно заехать больше половины участников (условность).
+    Попробуйте все это синхронизировать.
+    Первый участник, пересекший финишную черту, объявляется победителем (в момент пересечения этой самой черты).
+    Победитель должен быть только один (ситуация с 0 или 2+ победителями недопустима).
+    Когда все завершат гонку, нужно выдать объявление об окончании.
+    Можно корректировать классы (в том числе конструктор машин) и добавлять объекты классов из пакета java.util.concurrent.
+*/
 
+import java.util.concurrent.*;
+
+public class MainApp {
     public static void main(String[] args) {
+        final int CARS_COUNT = 4;
         System.out.println("ВАЖНОЕ ОБЪЯВЛЕНИЕ >>> Подготовка!!!");
-        Race race = new Race(new Road(60), new Tunnel(), new Road(40));
-        Car[] cars = new Car[CARS_COUNT];
+        final CyclicBarrier cyclicBarrier = new CyclicBarrier(CARS_COUNT);
+        final CountDownLatch prepareCountDownLatch = new CountDownLatch(CARS_COUNT);
+        final CountDownLatch startCountDownLatch = new CountDownLatch(1);
+        final ArrayBlockingQueue<String> results = new ArrayBlockingQueue<>(CARS_COUNT);
+        final Race race = new Race(new Road(60), new Tunnel(CARS_COUNT / 2), new Road(40));
+        final Car[] cars = new Car[CARS_COUNT];
         for (int i = 0; i < cars.length; i++) {
-            cars[i] = new Car(race, 20 + (int) (Math.random() * 10));
+            cars[i] = new Car(race, 20 + (int) (Math.random() * 10), results, cyclicBarrier, prepareCountDownLatch, startCountDownLatch);
         }
-        for (int i = 0; i < cars.length; i++) {
-            new Thread(cars[i]).start();
+        ExecutorService pool = Executors.newFixedThreadPool(CARS_COUNT);
+        boolean success = false;
+        try {
+            for (Car car : cars) {
+                pool.execute(car);
+            }
+            pool.shutdown();
+            prepareCountDownLatch.await();
+            System.out.println("ВАЖНОЕ ОБЪЯВЛЕНИЕ >>> Гонка началась!!!");
+            startCountDownLatch.countDown();
+            System.out.printf("%s - WIN%n", results.take());
+            success = pool.awaitTermination(1, TimeUnit.MINUTES);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        } finally {
+            System.out.printf("ВАЖНОЕ ОБЪЯВЛЕНИЕ >>> %s!!!", success ? "Гонка закончилась" : "Что-то пошло не так!");
         }
-        System.out.println("ВАЖНОЕ ОБЪЯВЛЕНИЕ >>> Гонка началась!!!");
-        System.out.println("ВАЖНОЕ ОБЪЯВЛЕНИЕ >>> Гонка закончилась!!!");
     }
 }
+
+/*
+    ВАЖНОЕ ОБЪЯВЛЕНИЕ >>> Подготовка!!!
+    Участник #2 готовится
+    Участник #1 готовится
+    Участник #4 готовится
+    Участник #3 готовится
+    Участник #2 готов
+    Участник #4 готов
+    Участник #1 готов
+    Участник #3 готов
+    ВАЖНОЕ ОБЪЯВЛЕНИЕ >>> Гонка началась!!!
+    Участник #2 начал этап: Дорога 60 метров
+    Участник #4 начал этап: Дорога 60 метров
+    Участник #3 начал этап: Дорога 60 метров
+    Участник #1 начал этап: Дорога 60 метров
+    Участник #1 закончил этап: Дорога 60 метров
+    Участник #3 закончил этап: Дорога 60 метров
+    Участник #3 готовится к этапу(ждет): Тоннель 80 метров
+    Участник #1 готовится к этапу(ждет): Тоннель 80 метров
+    Участник #1 начал этап: Тоннель 80 метров
+    Участник #3 начал этап: Тоннель 80 метров
+    Участник #4 закончил этап: Дорога 60 метров
+    Участник #4 готовится к этапу(ждет): Тоннель 80 метров
+    Участник #2 закончил этап: Дорога 60 метров
+    Участник #2 готовится к этапу(ждет): Тоннель 80 метров
+    Участник #3 закончил этап: Тоннель 80 метров
+    Участник #1 закончил этап: Тоннель 80 метров
+    Участник #2 начал этап: Тоннель 80 метров
+    Участник #4 начал этап: Тоннель 80 метров
+    Участник #3 начал этап: Дорога 40 метров
+    Участник #1 начал этап: Дорога 40 метров
+    Участник #3 закончил этап: Дорога 40 1метров
+    Участник #3 - WIN
+    Участник #1 закончил этап: Дорога 40 метров
+    Участник #4 закончил этап: Тоннель 80 метров
+    Участник #4 начал этап: Дорога 40 метров
+    Участник #2 закончил этап: Тоннель 80 метров
+    Участник #2 начал этап: Дорога 40 метров
+    Участник #2 закончил этап: Дорога 40 метров
+    Участник #4 закончил этап: Дорога 40 метров
+    ВАЖНОЕ ОБЪЯВЛЕНИЕ >>> Гонка закончилась!!!
+*/
