@@ -14,7 +14,6 @@ public class Car implements Runnable {
     private final CyclicBarrier cyclicBarrier;
     private final CountDownLatch prepareCountDownLatch;
     private final CountDownLatch startCountDownLatch;
-    //    private final Collection<String> results;
     private final ArrayBlockingQueue<String> results;
     private final Lock lock = new ReentrantLock();
 
