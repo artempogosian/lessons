@@ -20,27 +20,28 @@ public class MainApp {
         final int CARS_COUNT = 4;
         System.out.println("ВАЖНОЕ ОБЪЯВЛЕНИЕ >>> Подготовка!!!");
         final Collection<String> results = new ArrayList<>(CARS_COUNT);
-        final CountDownLatch countDownLatch = new CountDownLatch(CARS_COUNT);
+        final CountDownLatch prepareCountDownLatch = new CountDownLatch(CARS_COUNT);
+        final CountDownLatch startCountDownLatch = new CountDownLatch(1);
         final CyclicBarrier cyclicBarrier = new CyclicBarrier(CARS_COUNT);
         final Race race = new Race(new Road(60), new Tunnel(CARS_COUNT / 2), new Road(40));
         final Car[] cars = new Car[CARS_COUNT];
         for (int i = 0; i < cars.length; i++) {
-            cars[i] = new Car(race, 20 + (int) (Math.random() * 10), cyclicBarrier, countDownLatch, results);
+            cars[i] = new Car(race, 20 + (int) (Math.random() * 10), cyclicBarrier, prepareCountDownLatch, startCountDownLatch, results);
         }
-        ExecutorService pool = Executors.newCachedThreadPool();
-        for (Car car : cars) {
-            pool.submit(car);
-        }
-        pool.shutdown();
-        boolean success = false;
+        ExecutorService pool = Executors.newFixedThreadPool(CARS_COUNT);
         try {
-            countDownLatch.await();
+            for (Car car : cars) {
+                pool.execute(car);
+            }
+            prepareCountDownLatch.await();
             System.out.println("ВАЖНОЕ ОБЪЯВЛЕНИЕ >>> Гонка началась!!!");
-            success = pool.awaitTermination(1, TimeUnit.MINUTES);
+            startCountDownLatch.countDown();
+            pool.shutdown();
+            pool.awaitTermination(1, TimeUnit.MINUTES);
         } catch (InterruptedException e) {
             e.printStackTrace();
         } finally {
-            System.out.printf("ВАЖНОЕ ОБЪЯВЛЕНИЕ >>> %s!!!%n", success ? "Гонка закончилась" : "Что-то пошло не так");
+            System.out.println("ВАЖНОЕ ОБЪЯВЛЕНИЕ >>> Гонка закончилась!!!");
         }
     }
 }
