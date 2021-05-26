@@ -27,12 +27,15 @@ public class MainApp {
             cars[i] = new Car(race, 20 + (int) (Math.random() * 10), results, cyclicBarrier, prepareCountDownLatch, startCountDownLatch);
         }
         ExecutorService pool = Executors.newFixedThreadPool(CARS_COUNT);
-        boolean success = false;
         try {
             for (Car car : cars) {
                 pool.execute(car);
             }
+        } finally {
             pool.shutdown();
+        }
+        boolean success = false;
+        try {
             prepareCountDownLatch.await();
             System.out.println("ВАЖНОЕ ОБЪЯВЛЕНИЕ >>> Гонка началась!!!");
             startCountDownLatch.countDown();
