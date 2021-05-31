@@ -3,6 +3,7 @@ package ru.geekbrains.lesson6;
 import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
 import static java.util.stream.Collectors.*;
@@ -114,7 +115,7 @@ public class MainApp {
         // 5. Посчитать сумму четных чисел в пределах от 100 до 200 (включительно);
         System.out.println("task5");
         System.out.println(
-                Stream.of(230, 133, 209, 202, 168, 76, 52, 242, 196, 67, 135, 70, 141, 131, 183, 205, 214, 130, 158, 213, 116, 88, 89, 78, 110, 99, 80, 57, 226, 209, 91, 190, 64, 98, 223, 54, 232, 64, 67, 134, 102, 151, 89, 113, 170, 102, 68, 226, 130, 205)
+                IntStream.of(230, 133, 209, 202, 168, 76, 52, 242, 196, 67, 135, 70, 141, 131, 183, 205, 214, 130, 158, 213, 116, 88, 89, 78, 110, 99, 80, 57, 226, 209, 91, 190, 64, 98, 223, 54, 232, 64, 67, 134, 102, 151, 89, 113, 170, 102, 68, 226, 130, 205)
                         .filter(x -> x >= 100 && x <= 200 && x % 2 == 0)
                         .reduce(0, Integer::sum)
         );
