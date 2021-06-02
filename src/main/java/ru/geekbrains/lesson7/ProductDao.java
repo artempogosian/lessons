@@ -61,6 +61,7 @@ public class ProductDao {
     }
     //endregion
 
+    //region Methods
     public void add(Product product) throws SQLException, NoSuchFieldException, IllegalAccessException {
         Map<String, String> kvm = new HashMap<>();
         for (Map.Entry<String, String> f : fields.entrySet()) {
@@ -74,8 +75,6 @@ public class ProductDao {
         String values = kvm.values().stream().map(x -> "'" + x + "'").collect(Collectors.joining(", "));
         stmt.addBatch(String.format("INSERT INTO " + table + " (%s) VALUES (%s);", columns, values));
     }
-
-    //region Methods
 
     public void save() throws SQLException {
         stmt.executeBatch();
