@@ -73,7 +73,9 @@ public class ProductDao {
         }
         String columns = String.join(", ", kvm.keySet());
         String values = kvm.values().stream().map(x -> "'" + x + "'").collect(Collectors.joining(", "));
-        stmt.addBatch(String.format("INSERT INTO " + table + " (%s) VALUES (%s);", columns, values));
+        String query = String.format("INSERT INTO " + table + " (%s) VALUES (%s);", columns, values);
+        stmt.addBatch(query);
+        System.out.println(query);
     }
 
     public void save() throws SQLException {
@@ -136,7 +138,7 @@ public class ProductDao {
                         .append(" ")
                         .append(converter.get(field.getType()));
                 if (field.getName().equals("id")) {
-                    builder.append(" primary key autoincrement");
+                    builder.append(" PRIMARY KEY AUTOINCREMENT");
                 }
                 builder.append(", ");
             }
@@ -149,11 +151,15 @@ public class ProductDao {
     }
 
     public void dropTable() throws SQLException {
-        stmt.executeUpdate("DROP TABLE IF EXISTS " + table + ";");
+        String query = "DROP TABLE IF EXISTS " + table + ";";
+        stmt.executeUpdate(query);
+        System.out.println(query);
     }
 
     public void clearTable() throws SQLException {
-        stmt.executeUpdate("DELETE FROM " + table + " ;");
+        String query = "DELETE FROM " + table + ";";
+        stmt.executeUpdate(query);
+        System.out.println(query);
     }
     //endregion
 }
