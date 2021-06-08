@@ -14,6 +14,6 @@
         <property name="hbm2ddl.auto">none</property>
         <property name="current_session_context_class">thread</property>
 
-        <mapping class="com.geekbrains.hibernate.Person"/>
+        <mapping class="ru.geekbrains.lesson8.Student"/>
     </session-factory>
 </hibernate-configuration>
