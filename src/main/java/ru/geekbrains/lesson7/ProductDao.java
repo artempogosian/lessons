@@ -9,12 +9,14 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 public class ProductDao {
-    private Connection connection;
-    private Statement stmt;
+    private final Connection connection;
+    private final Statement stmt;
     private String table;
     private final Map<String, String> fields = new HashMap<>();
 
-    public ProductDao() {
+    public ProductDao(Connection connection, Statement stmt) {
+        this.connection = connection;
+        this.stmt = stmt;
         initialize();
     }
 
@@ -36,30 +38,6 @@ public class ProductDao {
             }
         }
     }
-
-    //region Connect/Disconnect
-    public void connect() throws SQLException {
-        connection = DriverManager.getConnection("jdbc:sqlite:javadb.db");
-        stmt = connection.createStatement();
-    }
-
-    public void disconnect() {
-        try {
-            if (stmt != null) {
-                stmt.close();
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-        try {
-            if (connection != null) {
-                connection.close();
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-    }
-    //endregion
 
     //region Methods
     public void add(Product product) throws SQLException, NoSuchFieldException, IllegalAccessException {
