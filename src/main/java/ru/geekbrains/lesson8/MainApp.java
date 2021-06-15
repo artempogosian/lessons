@@ -11,19 +11,15 @@ package ru.geekbrains.lesson8;
     Для решения задачи возможно понадобится применение Reflection API.
 */
 
-import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.cfg.Configuration;
 
 public class MainApp {
-    private static final SessionFactory factory = buildSessionFactory();
+    private static final SessionFactory sessionFactory = buildSessionFactory();
 
     public static void main(String[] args) {
-        Session session = null;
         try {
-            session = factory.openSession();
-
-            Repository<Student> studentsRepository = new Repository<>(session);
+            Repository<Student> studentsRepository = new Repository<>(sessionFactory);
 
             Student student1 = new Student("Яшин", "Федор", "Вадимович");
             Student student2 = new Student("Круглов", "Вадим", "Николаевич");
@@ -42,11 +38,8 @@ public class MainApp {
         } catch (Exception e) {
             e.printStackTrace();
         } finally {
-            if (session != null) {
-                session.close();
-            }
-            if (factory != null && !factory.isClosed()) {
-                factory.close();
+            if (sessionFactory != null && !sessionFactory.isClosed()) {
+                sessionFactory.close();
             }
         }
     }

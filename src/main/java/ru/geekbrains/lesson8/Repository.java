@@ -1,21 +1,24 @@
 package ru.geekbrains.lesson8;
 
 import org.hibernate.Session;
+import org.hibernate.SessionFactory;
 
 public class Repository<T> {
-    private Session session;
+    private final SessionFactory sessionFactory;
 
-    public Repository(Session session) {
-        this.session = session;
+    public Repository(SessionFactory sessionFactory) {
+        this.sessionFactory = sessionFactory;
     }
 
     public void createOrUpdate(T model) {
+        Session session = sessionFactory.getCurrentSession();
         session.getTransaction().begin();
         session.saveOrUpdate(model);
         session.getTransaction().commit();
     }
 
     public T findOne(Class<T> type, long id) {
+        Session session = sessionFactory.getCurrentSession();
         session.getTransaction().begin();
         T entity = session.find(type, id);
         session.getTransaction().commit();
@@ -28,6 +31,7 @@ public class Repository<T> {
     }
 
     public void delete(T entity) {
+        Session session = sessionFactory.getCurrentSession();
         session.getTransaction().begin();
         session.delete(entity);
         session.getTransaction().commit();
